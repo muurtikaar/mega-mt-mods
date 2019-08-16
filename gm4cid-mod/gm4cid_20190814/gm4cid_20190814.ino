@@ -57,8 +57,9 @@ Modification: Bob, GM4CID
 #define ENCODER_A          20    // CHG Rotary Encoder output  interrupt pin
 #define ENCODER_B          21    // CHG Rotary Encoder output  interrupt pin            
 #define SD_CS              10    // CHG SD card "CS"
+#define SCREEN_ROTATION     1    // landscape mode: use '1' or '3'
 //===================================  Morse Code Constants =============================
-#define MYCALL          "GM4CID"                    // your callsign for splash scrn & QSO
+#define MYCALL          "GM4CID"                  // your callsign for splash scrn & QSO
 #define DEFAULTSPEED       12                     // character speed in Words per Minute
 #define MAXSPEED           50                     // fastest morse speed in WPM
 #define MINSPEED            3                     // slowest morse speed in WPM
@@ -1208,7 +1209,8 @@ void initScreen()
     uint16_t ID;
   ID = tft.readID();
   tft.begin (ID);
-  tft.setRotation(1);  
+  //tft.setRotation(1);
+  tft.setRotation(SCREEN_ROTATION);               // landscape mode: use '1' or '3'
   tft.fillScreen(BLACK);
   tft.setTextColor(WHITE);
   tft.setTextSize(2);
@@ -1249,7 +1251,6 @@ void setup()
   initMorse();                                    // attach paddles & adjust speed
   splashScreen();                                 // show we are ready
 }
-
 void loop()
 {
   int selection = getMenuSelection();             // get menu selection from user
