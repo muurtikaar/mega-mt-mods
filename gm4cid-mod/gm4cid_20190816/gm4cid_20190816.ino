@@ -24,13 +24,18 @@ Modification: Ken, KM4NFQ "Not Fully Qualified"
 
 /*
 Modification: Bob, GM4CID
-        Date: 14 August 2019
-    Hardware: Mega 2560 R3, 2.4" TFT shield
+        Date: 16 August 2019
+    Hardware: Mega 2560 R3, Plug in 2.4" TFT shield with SD Reader
     Software: Added MCUFRIRND_khv library for TFT shield 
- Description: The TFT shield requires less wiring. 
-              It plugs directly in to the Mega2560 R3 full size board
-              On rear of Mega board wire add 11 to 51 (MOSI), 12 to 50 (MISO)
-              and 13 to 52 (SCK). Pins 11, 12 & 13 are set Hi Impedance.
+ Description: The TFT shield with SD Reader plugs directly in to the Mega2560 R3 full size board 
+ 
+ ------------Changes to SD Library for the SD Reader on plug in LCD Display--------------------    
+ in file Sd2Card.h in \libraries\SD-master\
+  #define USE_SPI_LIB ......for MEGA2560 ..comment out, ie. change to:-  // #define USE_SPI_LIB  
+  #define MEGA_SOFT_SPI 0 ..for MEGA2560 ..change to:-  #define MEGA_SOFT_SPI 1 
+
+ in file Sd2Card.cpp in \libraries\SD-master\
+  #define USE_SPI_LIB ......for MEGA2560 ..comment out, ie. change to:-     // #define USE_SPI_LIB 
  */
 
 //===================================  INCLUDES ========================================= 
@@ -57,9 +62,8 @@ Modification: Bob, GM4CID
 #define ENCODER_A          20    // CHG Rotary Encoder output  interrupt pin
 #define ENCODER_B          21    // CHG Rotary Encoder output  interrupt pin            
 #define SD_CS              10    // CHG SD card "CS"
-#define SCREEN_ROTATION     1    // landscape mode: use '1' or '3'
 //===================================  Morse Code Constants =============================
-#define MYCALL          "GM4CID"                  // your callsign for splash scrn & QSO
+#define MYCALL          "GM4CID"                    // your callsign for splash scrn & QSO
 #define DEFAULTSPEED       12                     // character speed in Words per Minute
 #define MAXSPEED           50                     // fastest morse speed in WPM
 #define MINSPEED            3                     // slowest morse speed in WPM
@@ -96,8 +100,6 @@ Modification: Bob, GM4CID
 #define SELECTBG        WHITE                     // Selected Menu background color
 #define TEXTCOLOR      YELLOW                     // Default non-menu text color
 #define ELEMENTS(x) (sizeof(x) / sizeof(x[0]))    // Handy macro for determining array sizes
-
-//Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
 
 //===================================  Rotary Encoder Variables =========================
 volatile int      rotaryCounter    = 0;           // "position" of rotary encoder (increments CW) 
@@ -1209,8 +1211,7 @@ void initScreen()
     uint16_t ID;
   ID = tft.readID();
   tft.begin (ID);
-  //tft.setRotation(1);
-  tft.setRotation(SCREEN_ROTATION);               // landscape mode: use '1' or '3'
+  tft.setRotation(1);  
   tft.fillScreen(BLACK);
   tft.setTextColor(WHITE);
   tft.setTextSize(2);
@@ -1240,10 +1241,7 @@ void setup()
   pinMode(A11, OUTPUT);
   digitalWrite(A11, LOW);                         // 0V for wire to Morse Pads   
   pinMode(19, OUTPUT);
-  digitalWrite(19, LOW);                          // 0V for wire to ENCODER and ENCODER_BUTTON
-  pinMode(11, INPUT);                             // Set to HiZ. hard wired on MEGA rear to 51 MOSI
-  pinMode(12, INPUT);                             // Set to HiZ, hard wired on MEGA rear to 50 MISO
-  pinMode(13, INPUT);                             // Set to HiZ, hard wired on MEGA rear to 52 SCK 
+  digitalWrite(19, LOW);                          // 0V for wire to ENCODER and ENCODER_BUTTON 
   SD.begin(SD_CS);                                // initialize SD library
   loadConfig();                                   // get saved values from EEPROM
   initEncoder();                                  // attach encoder interrupts
@@ -1251,6 +1249,7 @@ void setup()
   initMorse();                                    // attach paddles & adjust speed
   splashScreen();                                 // show we are ready
 }
+
 void loop()
 {
   int selection = getMenuSelection();             // get menu selection from user
