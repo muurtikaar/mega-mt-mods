@@ -1,4 +1,4 @@
-On 14 August 2019, Bob GM4CID wrote:
+On 16 August 2019, Bob GM4CID wrote:
 
 By rearranging the sketch a little to use a LCD setup that had
 proved reliable for shields with different controllers and re-arranging 
